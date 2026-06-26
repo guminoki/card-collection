@@ -40,16 +40,22 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .hd-btn.add:hover{background:var(--green-d);border-color:var(--green-d)}
 
 /* ── FILTER BAR ── */
-#fb{background:var(--white);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;min-height:44px}
-.fg{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.fl{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);white-space:nowrap}
-.pill{padding:3px 10px;border-radius:var(--r-pill);border:1px solid var(--border);background:transparent;font-size:11px;font-family:inherit;color:var(--text-2);cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.5}
-.pill:hover{border-color:var(--border-h);color:var(--text)}
-.pill.on-a{background:var(--ta-on);border-color:var(--ta-on);color:#fff}
-.pill.on-b{background:var(--tb-on);border-color:var(--tb-on);color:#fff}
-.pill.on-c{background:var(--tc-on);border-color:var(--tc-on);color:#fff}
+#fb{background:var(--white);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;flex-wrap:nowrap;overflow-x:auto;gap:5px;min-height:44px;scrollbar-width:none}
+#fb::-webkit-scrollbar{display:none}
+.fg{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.fl{display:none}
+.pill{padding:3px 10px;border-radius:var(--r-pill);border:2px solid transparent;font-size:11px;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.5;font-weight:400}
+.pill-a{background:var(--ta-bg);color:var(--ta-on)}
+.pill-b{background:var(--tb-bg);color:var(--tb-on)}
+.pill-c{background:var(--tc-bg);color:var(--tc-on)}
+.pill-a:hover{border-color:var(--ta-bd)}
+.pill-b:hover{border-color:var(--tb-bd)}
+.pill-c:hover{border-color:var(--tc-bd)}
+.pill.on-a{border-color:var(--ta-on);font-weight:500}
+.pill.on-b{border-color:var(--tb-on);font-weight:500}
+.pill.on-c{border-color:var(--tc-on);font-weight:500}
 .fdiv{width:1px;height:16px;background:var(--border);flex-shrink:0}
-#f-count{font-size:11px;color:var(--text-3);margin-left:auto;white-space:nowrap}
+#f-count{font-size:11px;color:var(--text-3);margin-left:auto;white-space:nowrap;flex-shrink:0;padding-left:8px}
 
 /* ── GALLERY ── */
 #gallery{padding:24px 20px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px;max-width:1440px;margin:0 auto}
@@ -174,11 +180,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 
 <!-- FILTER BAR -->
 <div id="fb">
-  <div class="fg"><span class="fl">タグ①</span><div id="ft-a"></div></div>
+  <div class="fg" id="ft-a"></div>
   <div class="fdiv"></div>
-  <div class="fg"><span class="fl">タグ②</span><div id="ft-b"></div></div>
+  <div class="fg" id="ft-b"></div>
   <div class="fdiv"></div>
-  <div class="fg"><span class="fl">タグ③</span><div id="ft-c"></div></div>
+  <div class="fg" id="ft-c"></div>
   <span id="f-count"></span>
 </div>
 
@@ -247,8 +253,12 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
         </div>
       </div>
 
-      <div class="frow"><label>カード名</label><input type="text" id="f-name" placeholder="例：○○ ベーカリー"></div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px">
+        <div class="frow"><label>ロットNo.</label><input type="text" id="f-lot" placeholder="例：001"></div>
+        <div class="frow"><label>カード名</label><input type="text" id="f-name" placeholder="例：○○ ベーカリー"></div>
+      </div>
       <div class="frow"><label>メモ（任意）</label><textarea id="f-memo" rows="2" placeholder="自由記述"></textarea></div>
+      <div class="frow"><label>URL（任意）</label><input type="url" id="f-url" placeholder="https://..."></div>
 
       <div class="tag-sect-label">タグ①</div>
       <div class="pill-row" id="fc-a"></div>
@@ -404,9 +414,11 @@ function openLightbox(c) {
   if (c.back_url)  { const i = document.createElement('img'); i.src = c.back_url;  i.alt = '裏面'; imgs.appendChild(i); }
 
   const nameEl = document.getElementById('lb-name');
-  nameEl.textContent = c.name || '';
+  nameEl.textContent = (c.lot ? '[' + c.lot + '] ' : '') + (c.name || '');
   const descEl = document.getElementById('lb-desc');
-  descEl.textContent = c.memo || '';
+  descEl.innerHTML = '';
+  if (c.memo) { const p = document.createElement('p'); p.textContent = c.memo; descEl.appendChild(p); }
+  if (c.url) { const a = document.createElement('a'); a.href = c.url; a.textContent = c.url; a.target = '_blank'; a.rel = 'noopener'; a.style.cssText = 'font-size:11px;color:var(--green);word-break:break-all;'; descEl.appendChild(a); }
   const tagsEl = document.getElementById('lb-tags');
   tagsEl.innerHTML = '';
   (c.tag_a||[]).forEach(t => tagsEl.appendChild(chip(t,'a')));
@@ -428,13 +440,13 @@ function buildFilterUI() {
     const cont = document.getElementById('ft-' + g);
     cont.innerHTML = '';
     const all = document.createElement('button');
-    all.className = 'pill on-' + g;
+    all.className = 'pill pill-' + g + ' on-' + g;
     all.textContent = 'すべて';
     all.addEventListener('click', () => { active[g].clear(); syncPills(g); renderGallery(); });
     cont.appendChild(all);
     TAGS[g].forEach(tag => {
       const b = document.createElement('button');
-      b.className = 'pill';
+      b.className = 'pill pill-' + g;
       b.textContent = tag;
       b.addEventListener('click', () => {
         active[g].has(tag) ? active[g].delete(tag) : active[g].add(tag);
@@ -450,12 +462,12 @@ function syncPills(g) {
   const btns = [...cont.querySelectorAll('.pill')];
   const allBtn = btns[0];
   if (active[g].size === 0) {
-    allBtn.className = 'pill on-' + g;
-    btns.slice(1).forEach(b => b.className = 'pill');
+    allBtn.className = 'pill pill-' + g + ' on-' + g;
+    btns.slice(1).forEach(b => b.className = 'pill pill-' + g);
   } else {
-    allBtn.className = 'pill';
+    allBtn.className = 'pill pill-' + g;
     btns.slice(1).forEach((b, i) => {
-      b.className = 'pill' + (active[g].has(TAGS[g][i]) ? ' on-' + g : '');
+      b.className = 'pill pill-' + g + (active[g].has(TAGS[g][i]) ? ' on-' + g : '');
     });
   }
 }
@@ -547,7 +559,9 @@ async function saveCard() {
 
     const payload = {
       name,
+      lot: document.getElementById('f-lot').value.trim(),
       memo: document.getElementById('f-memo').value.trim(),
+      url: document.getElementById('f-url').value.trim(),
       tag_a: getChecked('a'),
       tag_b: getChecked('b'),
       tag_c: getChecked('c'),
@@ -575,8 +589,10 @@ async function saveCard() {
 
 function startEdit(c) {
   document.getElementById('edit-id').value = c.id;
+  document.getElementById('f-lot').value = c.lot || '';
   document.getElementById('f-name').value = c.name || '';
   document.getElementById('f-memo').value = c.memo || '';
+  document.getElementById('f-url').value = c.url || '';
   clearChecks();
   (c.tag_a||[]).forEach(t => {
     const el = [...document.querySelectorAll('#fc-a .pill-ck')].find(el => el.textContent === t);
@@ -598,8 +614,10 @@ function startEdit(c) {
 
 function resetForm() {
   document.getElementById('edit-id').value = '';
+  document.getElementById('f-lot').value = '';
   document.getElementById('f-name').value = '';
   document.getElementById('f-memo').value = '';
+  document.getElementById('f-url').value = '';
   document.getElementById('fi-front').value = '';
   document.getElementById('fi-back').value = '';
   document.getElementById('fn-front').textContent = '画像を選択';
