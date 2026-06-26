@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Card Collection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#fff;
+  --bg:#f5f4f2;
+  --border:#e8e6e2;
+  --border-h:#ccc9c2;
+  --text:#1c1c1c;
+  --text-2:#6b6860;
+  --text-3:#a8a5a0;
+  --green:#3a7d5e;
+  --green-d:#2a5c44;
+  --green-l:#eaf4ef;
+  --red:#c0392b;
+  --ta-bg:#e8eef7;--ta-on:#2c4d78;--ta-bd:#b8cce4;
+  --tb-bg:#f0edf8;--tb-on:#4a3570;--tb-bd:#c8bce8;
+  --tc-bg:#eaf4ef;--tc-on:#275e42;--tc-bd:#b0d8c0;
+  --r:8px;--r-pill:100px;
+  --sh:0 1px 4px rgba(0,0,0,.06);
+  --sh-h:0 4px 16px rgba(0,0,0,.10);
+}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+
+/* ── HEADER ── */
+#hd{position:sticky;top:0;z-index:50;background:var(--white);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 20px;gap:10px}
+#hd-title{font-size:14px;font-weight:500;letter-spacing:.06em;flex:1}
+.hd-btn{width:32px;height:32px;border-radius:var(--r);border:1px solid var(--border);background:transparent;color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;flex-shrink:0}
+.hd-btn:hover{border-color:var(--border-h);color:var(--text);background:var(--bg)}
+.hd-btn.add{background:var(--green);border-color:var(--green);color:#fff;font-size:20px;font-weight:300}
+.hd-btn.add:hover{background:var(--green-d);border-color:var(--green-d)}
+
+/* ── FILTER BAR ── */
+#fb{background:var(--white);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;flex-wrap:nowrap;overflow-x:auto;gap:5px;min-height:44px;scrollbar-width:none}
+#fb::-webkit-scrollbar{display:none}
+.fg{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.fl{display:none}
+.pill{padding:3px 10px;border-radius:var(--r-pill);border:2px solid transparent;font-size:11px;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.5;font-weight:400}
+.pill-a{background:var(--ta-bg);color:var(--ta-on)}
+.pill-b{background:var(--tb-bg);color:var(--tb-on)}
+.pill-c{background:var(--tc-bg);color:var(--tc-on)}
+.pill-a:hover{border-color:var(--ta-bd)}
+.pill-b:hover{border-color:var(--tb-bd)}
+.pill-c:hover{border-color:var(--tc-bd)}
+.pill.on-a{border-color:var(--ta-on);font-weight:500}
+.pill.on-b{border-color:var(--tb-on);font-weight:500}
+.pill.on-c{border-color:var(--tc-on);font-weight:500}
+.fdiv{width:1px;height:16px;background:var(--border);flex-shrink:0}
+#f-count{font-size:11px;color:var(--text-3);margin-left:auto;white-space:nowrap;flex-shrink:0;padding-left:8px}
+
+/* ── GALLERY ── */
+#gallery{padding:24px 20px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px;max-width:1440px;margin:0 auto}
+
+/* ── CARD ── */
+.cw{aspect-ratio:55/91;perspective:900px;cursor:pointer}
+.ci{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:var(--r)}
+.cw.flipped .ci{transform:rotateY(180deg)}
+.cf{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r);border:1px solid var(--border);background:var(--white);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .2s}
+.cw:hover .cf{box-shadow:var(--sh-h)}
+.cb{transform:rotateY(180deg)}
+.cf img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.ctags{position:absolute;bottom:0;left:0;right:0;padding:5px;display:flex;flex-wrap:wrap;gap:3px;background:linear-gradient(transparent,rgba(255,255,255,.92) 55%);border-radius:0 0 var(--r) var(--r)}
+.ct{font-size:9px;padding:2px 6px;border-radius:var(--r-pill);line-height:1.4;font-family:inherit}
+.ct-a{background:var(--ta-bg);color:var(--ta-on);border:1px solid var(--ta-bd)}
+.ct-b{background:var(--tb-bg);color:var(--tb-on);border:1px solid var(--tb-bd)}
+.ct-c{background:var(--tc-bg);color:var(--tc-on);border:1px solid var(--tc-bd)}
+
+/* ── EMPTY STATE ── */
+#empty{display:none;grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--text-3)}
+#empty svg{margin-bottom:12px;opacity:.3}
+#empty p{font-size:14px;color:var(--text-2);margin-bottom:6px;font-weight:500}
+#empty small{font-size:12px;line-height:1.7}
+
+/* ── LIGHTBOX ── */
+#lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:center;justify-content:center;padding:16px}
+#lb.open{display:flex}
+#lb-box{background:var(--white);border-radius:var(--r);padding:20px;max-width:92vw;max-height:92vh;overflow:auto;position:relative;display:flex;flex-direction:column;gap:14px}
+#lb-close{position:absolute;top:10px;right:12px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text-2)}
+#lb-close:hover{border-color:var(--border-h);color:var(--text)}
+#lb-imgs{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+#lb-imgs img{border-radius:6px;border:1px solid var(--border);max-height:68vh;object-fit:contain;width:min(220px,40vw)}
+#lb-meta{min-width:0}
+#lb-name{font-size:15px;font-weight:500;margin-bottom:4px}
+#lb-desc{font-size:12px;color:var(--text-2);line-height:1.7}
+#lb-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+
+/* ── ADMIN OVERLAY ── */
+#adm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;padding:16px}
+#adm.open{display:flex}
+#adm-box{background:var(--white);border-radius:var(--r);padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;position:relative}
+#adm-close{position:absolute;top:12px;right:14px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text-2)}
+#adm-close:hover{border-color:var(--border-h);color:var(--text)}
+#adm-box h2{font-size:14px;font-weight:500;margin-bottom:18px}
+
+/* ── FORM ── */
+.frow{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.frow label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.frow input,.frow textarea,.frow select{padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg);font-size:13px;font-family:inherit;color:var(--text);width:100%;transition:border-color .15s}
+.frow input:focus,.frow textarea:focus,.frow select:focus{outline:none;border-color:var(--green);background:var(--white)}
+.up-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.up-col label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:5px}
+.up-area{border:1.5px dashed var(--border);border-radius:var(--r);background:var(--bg);min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.up-area:hover,.up-area.drag{border-color:var(--green);background:var(--green-l)}
+.up-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.up-area .up-ico{font-size:18px;color:var(--text-3);pointer-events:none}
+.up-area .up-txt{font-size:11px;color:var(--text-3);pointer-events:none}
+.up-area .up-ok{font-size:11px;color:var(--green);font-weight:500;pointer-events:none}
+.thumb{width:100%;aspect-ratio:55/91;border-radius:6px;border:1px solid var(--border);overflow:hidden;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-3);margin-top:6px}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.tag-sect-label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.pill-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.pill-ck{padding:4px 11px;border-radius:var(--r-pill);border:1px solid var(--border);background:transparent;font-size:12px;font-family:inherit;color:var(--text-2);cursor:pointer;transition:all .15s;user-select:none}
+.pill-ck.ck-a{background:var(--ta-on);border-color:var(--ta-on);color:#fff}
+.pill-ck.ck-b{background:var(--tb-on);border-color:var(--tb-on);color:#fff}
+.pill-ck.ck-c{background:var(--tc-on);border-color:var(--tc-on);color:#fff}
+.btn-row{display:flex;gap:8px;margin-top:16px}
+.btn-save{flex:1;padding:9px;border-radius:var(--r);border:none;background:var(--green);color:#fff;font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;transition:background .15s}
+.btn-save:hover{background:var(--green-d)}
+.btn-save:disabled{opacity:.55;cursor:not-allowed}
+.btn-cancel{padding:9px 14px;border-radius:var(--r);border:1px solid var(--border);background:transparent;font-size:13px;font-family:inherit;color:var(--text-2);cursor:pointer;transition:all .15s}
+.btn-cancel:hover{border-color:var(--border-h);color:var(--text)}
+#adm-msg{font-size:12px;min-height:16px;margin-top:8px;color:var(--green-d)}
+#adm-msg.err{color:var(--red)}
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0}
+.adm-list{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto}
+.adm-item{display:flex;align-items:center;justify-content:space-between;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg)}
+.adm-item-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px}
+.adm-item-btns{display:flex;gap:4px;flex-shrink:0}
+.ib{padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:var(--white);font-size:11px;font-family:inherit;cursor:pointer}
+.ib:disabled{opacity:.4;cursor:default}
+.ib.edit{border-color:var(--green);color:var(--green)}
+.ib.edit:hover{background:var(--green-l)}
+.ib.del{border-color:#e0a8a3;color:var(--red)}
+.ib.del:hover{background:#fdf0ef}
+
+/* ── LOGIN ── */
+#login-sec h3{font-size:14px;font-weight:500;margin-bottom:16px}
+#login-msg{font-size:12px;color:var(--red);min-height:16px;margin-top:8px}
+.logout-link{background:none;border:none;color:var(--text-3);font-size:11px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:0}
+.logout-link:hover{color:var(--text-2)}
+
+/* ── CONSOLE TRIGGER ── */
+#console-trigger{text-align:center;padding:40px 0 60px;font-size:11px;color:var(--border-h);cursor:pointer;letter-spacing:.12em;user-select:none}
+#console-trigger:hover{color:var(--text-3)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  #hd{padding:0 14px;height:48px}
+  #fb{padding:7px 14px}
+  #gallery{padding:16px 12px 48px;gap:12px;grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  #adm-box{padding:18px 16px}
+  #console-trigger{padding:32px 0 48px}
+}
+@media(min-width:900px){
+  #gallery{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:22px;padding:28px 32px 72px}
+  #fb{padding:8px 32px}
+  #hd{padding:0 32px}
+}
+@media(min-width:1200px){
+  #gallery{grid-template-columns:repeat(auto-fill,minmax(185px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hd">
+  <div id="hd-title">Card Collection</div>
+  <button class="hd-btn add" id="btn-add" title="カードを追加">＋</button>
+</header>
+
+<!-- FILTER BAR -->
+<div id="fb">
+  <div class="fg" id="ft-a"></div>
+  <div class="fdiv"></div>
+  <div class="fg" id="ft-b"></div>
+  <div class="fdiv"></div>
+  <div class="fg" id="ft-c"></div>
+  <span id="f-count"></span>
+</div>
+
+<!-- GALLERY -->
+<div id="gallery">
+  <div id="empty">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+    <p>カードがまだありません</p>
+    <small>＋ボタンから表・裏の画像をアップロードして<br>最初のカードを追加しましょう</small>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lb" role="dialog" aria-modal="true">
+  <div id="lb-box">
+    <button id="lb-close" aria-label="閉じる">✕</button>
+    <div id="lb-imgs"></div>
+    <div id="lb-meta">
+      <div id="lb-name"></div>
+      <div id="lb-desc"></div>
+      <div id="lb-tags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN OVERLAY -->
+<div id="adm" role="dialog" aria-modal="true">
+  <div id="adm-box">
+    <button id="adm-close" aria-label="閉じる">✕</button>
+
+    <!-- ログイン -->
+    <div id="login-sec">
+      <h3>管理者ログイン</h3>
+      <div class="frow"><label>メールアドレス</label><input type="email" id="f-email" placeholder="admin@example.com" autocomplete="email"></div>
+      <div class="frow"><label>パスワード</label><input type="password" id="f-pass" placeholder="パスワード" autocomplete="current-password"></div>
+      <button class="btn-save" id="btn-login" style="margin-top:6px">ログイン</button>
+      <div id="login-msg"></div>
+    </div>
+
+    <!-- 管理画面 -->
+    <div id="mgmt-sec" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h2 id="mgmt-title" style="margin:0">カードを追加</h2>
+        <button class="logout-link" id="btn-logout">ログアウト</button>
+      </div>
+
+      <!-- 画像アップロード -->
+      <div class="up-pair">
+        <div class="up-col">
+          <label>表面 <span style="color:var(--red)">*</span></label>
+          <label class="up-area" id="ua-front">
+            <input type="file" id="fi-front" accept="image/*">
+            <span class="up-ico">↑</span>
+            <span class="up-txt" id="fn-front">画像を選択</span>
+          </label>
+          <div class="thumb" id="pv-front">プレビュー</div>
+        </div>
+        <div class="up-col">
+          <label>裏面 <span style="color:var(--red)">*</span></label>
+          <label class="up-area" id="ua-back">
+            <input type="file" id="fi-back" accept="image/*">
+            <span class="up-ico">↑</span>
+            <span class="up-txt" id="fn-back">画像を選択</span>
+          </label>
+          <div class="thumb" id="pv-back">プレビュー</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px">
+        <div class="frow"><label>ロットNo.</label><input type="text" id="f-lot" placeholder="例：001"></div>
+        <div class="frow"><label>カード名</label><input type="text" id="f-name" placeholder="例：○○ ベーカリー"></div>
+      </div>
+      <div class="frow"><label>メモ（任意）</label><textarea id="f-memo" rows="2" placeholder="自由記述"></textarea></div>
+      <div class="frow"><label>URL（任意）</label><input type="url" id="f-url" placeholder="https://..."></div>
+
+      <div class="tag-sect-label">タグ①</div>
+      <div class="pill-row" id="fc-a"></div>
+      <div class="tag-sect-label">タグ②</div>
+      <div class="pill-row" id="fc-b"></div>
+      <div class="tag-sect-label">タグ③</div>
+      <div class="pill-row" id="fc-c"></div>
+
+      <input type="hidden" id="edit-id">
+      <div class="btn-row">
+        <button class="btn-save" id="btn-save">保存する</button>
+        <button class="btn-cancel" id="btn-cancel" style="display:none">キャンセル</button>
+      </div>
+      <div id="adm-msg"></div>
+
+      <hr class="divider">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px">登録済みカード</div>
+      <div class="adm-list" id="adm-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONSOLE TRIGGER -->
+<div id="console-trigger">— CONSOLE PANEL —</div>
+
+<script>
+const SB_URL = 'https://qsjggchstjehmlptjdjw.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzamdnY2hzdGplaG1scHRqZGp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNzQ3NDksImV4cCI6MjA5Nzg1MDc0OX0.hup5eVHjc-2ZTq5BNWfev_-LxZNjsfXu7TKr9k65lWs';
+
+// ── タグ定義（自由に編集可）──
+const TAGS = {
+  a: ['EAT IN','TAKE OUT','DELIVERY'],
+  b: ['主食','甘味','スナック','ドリンク'],
+  c: ['東京','大阪','京都','福岡','海外'],
+};
+
+let sb, allCards = [], session = null;
+const active = { a: new Set(), b: new Set(), c: new Set() };
+
+// ── 初期化 ──
+window.addEventListener('load', () => {
+  sb = window.supabase.createClient(SB_URL, SB_KEY, {
+    auth: { persistSession: true, storage: localStorage, detectSessionInUrl: false }
+  });
+
+  buildFilterUI();
+  buildTagChecks();
+  bindEvents();
+  loadSession();
+  fetchCards();
+});
+
+// ── セッション確認 ──
+async function loadSession() {
+  try {
+    const { data } = await sb.auth.getSession();
+    session = data.session;
+  } catch(e) { session = null; }
+}
+
+// ── カード取得 ──
+async function fetchCards() {
+  try {
+    const { data, error } = await sb.from('cards').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    allCards = data || [];
+  } catch(e) {
+    allCards = [];
+  }
+  renderGallery();
+  renderAdminList();
+}
+
+// ── ギャラリー描画 ──
+function renderGallery() {
+  const gallery = document.getElementById('gallery');
+  const empty = document.getElementById('empty');
+  [...gallery.querySelectorAll('.cw')].forEach(el => el.remove());
+
+  const visible = allCards.filter(c => matchFilter(c));
+  document.getElementById('f-count').textContent = visible.length + ' 枚';
+  empty.style.display = visible.length === 0 ? 'block' : 'none';
+
+  visible.forEach(c => gallery.insertBefore(makeCard(c), empty));
+}
+
+function matchFilter(c) {
+  for (const g of ['a','b','c']) {
+    if (active[g].size === 0) continue;
+    const tags = c['tag_' + g] || [];
+    if (![...active[g]].some(t => tags.includes(t))) return false;
+  }
+  return true;
+}
+
+function makeCard(c) {
+  const w = document.createElement('div');
+  w.className = 'cw';
+
+  const inner = document.createElement('div');
+  inner.className = 'ci';
+
+  // 表・裏
+  ['front','back'].forEach(side => {
+    const face = document.createElement('div');
+    face.className = 'cf' + (side === 'back' ? ' cb' : '');
+    const url = side === 'front' ? c.front_url : c.back_url;
+    if (url) {
+      const img = document.createElement('img');
+      img.src = url; img.loading = 'lazy';
+      img.alt = c.name + (side === 'back' ? '（裏）' : '');
+      face.appendChild(img);
+    }
+    // 表面だけタグチップ
+    if (side === 'front') {
+      const tags = document.createElement('div');
+      tags.className = 'ctags';
+      (c.tag_a||[]).forEach(t => tags.appendChild(chip(t,'a')));
+      (c.tag_b||[]).forEach(t => tags.appendChild(chip(t,'b')));
+      (c.tag_c||[]).forEach(t => tags.appendChild(chip(t,'c')));
+      if (tags.children.length) face.appendChild(tags);
+    }
+    inner.appendChild(face);
+  });
+  w.appendChild(inner);
+
+  // シングルクリック→フリップ、ダブルクリック→ライトボックス
+  let clicks = 0, timer;
+  w.addEventListener('click', () => {
+    clicks++;
+    if (clicks === 1) {
+      timer = setTimeout(() => { w.classList.toggle('flipped'); clicks = 0; }, 220);
+    } else {
+      clearTimeout(timer); clicks = 0;
+      openLightbox(c);
+    }
+  });
+  return w;
+}
+
+function chip(text, g) {
+  const s = document.createElement('span');
+  s.className = 'ct ct-' + g;
+  s.textContent = text;
+  return s;
+}
+
+// ── ライトボックス ──
+function openLightbox(c) {
+  const imgs = document.getElementById('lb-imgs');
+  imgs.innerHTML = '';
+  if (c.front_url) { const i = document.createElement('img'); i.src = c.front_url; i.alt = '表面'; imgs.appendChild(i); }
+  if (c.back_url)  { const i = document.createElement('img'); i.src = c.back_url;  i.alt = '裏面'; imgs.appendChild(i); }
+
+  const nameEl = document.getElementById('lb-name');
+  nameEl.textContent = (c.lot ? '[' + c.lot + '] ' : '') + (c.name || '');
+  const descEl = document.getElementById('lb-desc');
+  descEl.innerHTML = '';
+  if (c.memo) { const p = document.createElement('p'); p.textContent = c.memo; descEl.appendChild(p); }
+  if (c.url) { const a = document.createElement('a'); a.href = c.url; a.textContent = c.url; a.target = '_blank'; a.rel = 'noopener'; a.style.cssText = 'font-size:11px;color:var(--green);word-break:break-all;'; descEl.appendChild(a); }
+  const tagsEl = document.getElementById('lb-tags');
+  tagsEl.innerHTML = '';
+  (c.tag_a||[]).forEach(t => tagsEl.appendChild(chip(t,'a')));
+  (c.tag_b||[]).forEach(t => tagsEl.appendChild(chip(t,'b')));
+  (c.tag_c||[]).forEach(t => tagsEl.appendChild(chip(t,'c')));
+
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── フィルター UI ──
+function buildFilterUI() {
+  for (const g of ['a','b','c']) {
+    const cont = document.getElementById('ft-' + g);
+    cont.innerHTML = '';
+    const all = document.createElement('button');
+    all.className = 'pill pill-' + g + ' on-' + g;
+    all.textContent = 'すべて';
+    all.addEventListener('click', () => { active[g].clear(); syncPills(g); renderGallery(); });
+    cont.appendChild(all);
+    TAGS[g].forEach(tag => {
+      const b = document.createElement('button');
+      b.className = 'pill pill-' + g;
+      b.textContent = tag;
+      b.addEventListener('click', () => {
+        active[g].has(tag) ? active[g].delete(tag) : active[g].add(tag);
+        syncPills(g); renderGallery();
+      });
+      cont.appendChild(b);
+    });
+  }
+}
+
+function syncPills(g) {
+  const cont = document.getElementById('ft-' + g);
+  const btns = [...cont.querySelectorAll('.pill')];
+  const allBtn = btns[0];
+  if (active[g].size === 0) {
+    allBtn.className = 'pill pill-' + g + ' on-' + g;
+    btns.slice(1).forEach(b => b.className = 'pill pill-' + g);
+  } else {
+    allBtn.className = 'pill pill-' + g;
+    btns.slice(1).forEach((b, i) => {
+      b.className = 'pill pill-' + g + (active[g].has(TAGS[g][i]) ? ' on-' + g : '');
+    });
+  }
+}
+
+// ── タグチェック（管理フォーム）──
+function buildTagChecks() {
+  for (const g of ['a','b','c']) {
+    const cont = document.getElementById('fc-' + g);
+    cont.innerHTML = '';
+    TAGS[g].forEach(tag => {
+      const el = document.createElement('span');
+      el.className = 'pill-ck';
+      el.textContent = tag;
+      el.addEventListener('click', () => el.classList.toggle('ck-' + g));
+      cont.appendChild(el);
+    });
+  }
+}
+
+function getChecked(g) {
+  return [...document.querySelectorAll('#fc-' + g + ' .pill-ck.ck-' + g)].map(el => el.textContent);
+}
+
+function clearChecks() {
+  document.querySelectorAll('.pill-ck').forEach(el => el.className = 'pill-ck');
+}
+
+// ── 管理リスト ──
+function renderAdminList() {
+  const list = document.getElementById('adm-list');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!allCards.length) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--text-3);text-align:center;padding:12px">登録済みのカードはありません</div>';
+    return;
+  }
+  allCards.forEach((c, i) => {
+    const item = document.createElement('div');
+    item.className = 'adm-item';
+    const name = document.createElement('div');
+    name.className = 'adm-item-name';
+    name.textContent = c.name || '（無題）';
+    const btns = document.createElement('div');
+    btns.className = 'adm-item-btns';
+    const up = document.createElement('button'); up.className = 'ib'; up.textContent = '▲'; up.disabled = i === 0;
+    up.addEventListener('click', () => moveCard(i, -1));
+    const dn = document.createElement('button'); dn.className = 'ib'; dn.textContent = '▼'; dn.disabled = i === allCards.length - 1;
+    dn.addEventListener('click', () => moveCard(i, 1));
+    const ed = document.createElement('button'); ed.className = 'ib edit'; ed.textContent = '編集';
+    ed.addEventListener('click', () => startEdit(c));
+    const dl = document.createElement('button'); dl.className = 'ib del'; dl.textContent = '削除';
+    dl.addEventListener('click', () => deleteCard(c.id));
+    btns.append(up, dn, ed, dl);
+    item.append(name, btns);
+    list.appendChild(item);
+  });
+}
+
+// ── カード保存 ──
+async function saveCard() {
+  const editId = document.getElementById('edit-id').value;
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showMsg('カード名を入力してください', true); return; }
+
+  const fFile = document.getElementById('fi-front').files;
+  const bFile = document.getElementById('fi-back').files;
+  if (!editId && (!fFile.length || !bFile.length)) {
+    showMsg('表面・裏面どちらの画像も必要です', true); return;
+  }
+
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true; btn.textContent = '保存中…';
+
+  try {
+    let frontUrl = '', backUrl = '';
+
+    if (fFile.length) {
+      const path = 'front_' + Date.now() + '_' + fFile[0].name.replace(/[^a-zA-Z0-9.]/g,'_');
+      const { error: upErr } = await sb.storage.from('card-images').upload(path, fFile[0], { upsert: true });
+      if (upErr) throw upErr;
+      frontUrl = sb.storage.from('card-images').getPublicUrl(path).data.publicUrl;
+    }
+    if (bFile.length) {
+      const path = 'back_' + Date.now() + '_' + bFile[0].name.replace(/[^a-zA-Z0-9.]/g,'_');
+      const { error: upErr } = await sb.storage.from('card-images').upload(path, bFile[0], { upsert: true });
+      if (upErr) throw upErr;
+      backUrl = sb.storage.from('card-images').getPublicUrl(path).data.publicUrl;
+    }
+
+    const payload = {
+      name,
+      lot: document.getElementById('f-lot').value.trim(),
+      memo: document.getElementById('f-memo').value.trim(),
+      url: document.getElementById('f-url').value.trim(),
+      tag_a: getChecked('a'),
+      tag_b: getChecked('b'),
+      tag_c: getChecked('c'),
+    };
+    if (frontUrl) payload.front_url = frontUrl;
+    if (backUrl)  payload.back_url  = backUrl;
+
+    if (editId) {
+      const { error } = await sb.from('cards').update(payload).eq('id', editId);
+      if (error) throw error;
+    } else {
+      const { error } = await sb.from('cards').insert(payload);
+      if (error) throw error;
+    }
+
+    showMsg(editId ? '更新しました ✓' : '追加しました ✓');
+    resetForm();
+    await fetchCards();
+  } catch(e) {
+    showMsg('エラー: ' + e.message, true);
+  }
+  btn.disabled = false;
+  btn.textContent = document.getElementById('edit-id').value ? '上書き保存' : '保存する';
+}
+
+function startEdit(c) {
+  document.getElementById('edit-id').value = c.id;
+  document.getElementById('f-lot').value = c.lot || '';
+  document.getElementById('f-name').value = c.name || '';
+  document.getElementById('f-memo').value = c.memo || '';
+  document.getElementById('f-url').value = c.url || '';
+  clearChecks();
+  (c.tag_a||[]).forEach(t => {
+    const el = [...document.querySelectorAll('#fc-a .pill-ck')].find(el => el.textContent === t);
+    if (el) el.classList.add('ck-a');
+  });
+  (c.tag_b||[]).forEach(t => {
+    const el = [...document.querySelectorAll('#fc-b .pill-ck')].find(el => el.textContent === t);
+    if (el) el.classList.add('ck-b');
+  });
+  (c.tag_c||[]).forEach(t => {
+    const el = [...document.querySelectorAll('#fc-c .pill-ck')].find(el => el.textContent === t);
+    if (el) el.classList.add('ck-c');
+  });
+  document.getElementById('mgmt-title').textContent = 'カードを編集';
+  document.getElementById('btn-save').textContent = '上書き保存';
+  document.getElementById('btn-cancel').style.display = '';
+  document.getElementById('adm-box').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+  document.getElementById('edit-id').value = '';
+  document.getElementById('f-lot').value = '';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-memo').value = '';
+  document.getElementById('f-url').value = '';
+  document.getElementById('fi-front').value = '';
+  document.getElementById('fi-back').value = '';
+  document.getElementById('fn-front').textContent = '画像を選択';
+  document.getElementById('fn-back').textContent = '画像を選択';
+  document.getElementById('pv-front').innerHTML = 'プレビュー';
+  document.getElementById('pv-back').innerHTML = 'プレビュー';
+  clearChecks();
+  document.getElementById('mgmt-title').textContent = 'カードを追加';
+  document.getElementById('btn-save').textContent = '保存する';
+  document.getElementById('btn-cancel').style.display = 'none';
+  showMsg('');
+}
+
+async function deleteCard(id) {
+  if (!confirm('このカードを削除しますか？')) return;
+  const { error } = await sb.from('cards').delete().eq('id', id);
+  if (error) { showMsg('削除エラー: ' + error.message, true); return; }
+  await fetchCards();
+}
+
+async function moveCard(idx, dir) {
+  const a = allCards[idx], b = allCards[idx + dir];
+  const ta = a.created_at, tb = b.created_at;
+  await sb.from('cards').update({ created_at: tb }).eq('id', a.id);
+  await sb.from('cards').update({ created_at: ta }).eq('id', b.id);
+  await fetchCards();
+}
+
+function showMsg(text, isErr = false) {
+  const el = document.getElementById('adm-msg');
+  el.textContent = text;
+  el.className = isErr ? 'err' : '';
+}
+
+// ── ログイン ──
+async function doLogin() {
+  const email = document.getElementById('f-email').value.trim();
+  const pass  = document.getElementById('f-pass').value;
+  const msg   = document.getElementById('login-msg');
+  const btn   = document.getElementById('btn-login');
+  if (!email || !pass) { msg.textContent = 'メールアドレスとパスワードを入力してください'; return; }
+  btn.disabled = true; btn.textContent = '接続中…'; msg.textContent = '';
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) throw error;
+    session = data.session;
+    document.getElementById('login-sec').style.display = 'none';
+    document.getElementById('mgmt-sec').style.display = '';
+    renderAdminList();
+  } catch(e) {
+    msg.textContent = 'ログイン失敗: ' + e.message;
+  }
+  btn.disabled = false; btn.textContent = 'ログイン';
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  session = null;
+  document.getElementById('login-sec').style.display = '';
+  document.getElementById('mgmt-sec').style.display = 'none';
+  document.getElementById('f-email').value = '';
+  document.getElementById('f-pass').value = '';
+  document.getElementById('login-msg').textContent = '';
+}
+
+// ── 管理パネル開閉 ──
+function openAdmin() {
+  document.getElementById('adm').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // セッション確認してUI切替
+  if (session) {
+    document.getElementById('login-sec').style.display = 'none';
+    document.getElementById('mgmt-sec').style.display = '';
+    renderAdminList();
+  } else {
+    document.getElementById('login-sec').style.display = '';
+    document.getElementById('mgmt-sec').style.display = 'none';
+  }
+}
+
+function closeAdmin() {
+  document.getElementById('adm').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── イベント ──
+function bindEvents() {
+  // 管理パネル
+  document.getElementById('console-trigger').addEventListener('click', openAdmin);
+  document.getElementById('btn-add').addEventListener('click', openAdmin);
+  document.getElementById('adm-close').addEventListener('click', closeAdmin);
+  document.getElementById('adm').addEventListener('click', e => { if (e.target === document.getElementById('adm')) closeAdmin(); });
+
+  // ライトボックス
+  document.getElementById('lb-close').addEventListener('click', closeLightbox);
+  document.getElementById('lb').addEventListener('click', e => { if (e.target === document.getElementById('lb')) closeLightbox(); });
+
+  // ESC
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLightbox(); closeAdmin(); } });
+
+  // ログイン
+  document.getElementById('btn-login').addEventListener('click', doLogin);
+  document.getElementById('f-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('btn-logout').addEventListener('click', doLogout);
+
+  // カード保存・リセット
+  document.getElementById('btn-save').addEventListener('click', saveCard);
+  document.getElementById('btn-cancel').addEventListener('click', resetForm);
+
+  // 画像プレビュー
+  ['front','back'].forEach(side => {
+    const input = document.getElementById('fi-' + side);
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      if (!file) return;
+      document.getElementById('fn-' + side).textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const pv = document.getElementById('pv-' + side);
+        pv.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        pv.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+}
+</script>
+</body>
+</html>
