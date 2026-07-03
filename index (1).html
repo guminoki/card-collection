@@ -11,157 +11,151 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --white:#fff;
-  --bg:#f5f4f2;
-  --border:#e8e6e2;
-  --border-h:#ccc9c2;
-  --text:#1c1c1c;
-  --text-2:#6b6860;
-  --text-3:#a8a5a0;
-  --green:#3a7d5e;
-  --green-d:#2a5c44;
-  --green-l:#eaf4ef;
-  --red:#c0392b;
+  --white:#fff;--bg:#f5f4f2;--border:#e8e6e2;--border-h:#ccc9c2;
+  --text:#1c1c1c;--text-2:#6b6860;--text-3:#a8a5a0;
+  --green:#3a7d5e;--green-d:#2a5c44;--green-l:#eaf4ef;--red:#c0392b;
   --ta-bg:#e8eef7;--ta-on:#2c4d78;--ta-bd:#b8cce4;
   --tb-bg:#f0edf8;--tb-on:#4a3570;--tb-bd:#c8bce8;
   --tc-bg:#eaf4ef;--tc-on:#275e42;--tc-bd:#b0d8c0;
   --r:8px;--r-pill:100px;
-  --sh:0 1px 4px rgba(0,0,0,.06);
-  --sh-h:0 4px 16px rgba(0,0,0,.10);
+  --sh:0 1px 4px rgba(0,0,0,.06);--sh-h:0 4px 16px rgba(0,0,0,.10);
 }
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
 
-/* ── HEADER ── */
+/* HEADER */
 #hd{position:sticky;top:0;z-index:50;background:var(--white);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 20px;gap:10px}
 #hd-title{font-size:14px;font-weight:500;letter-spacing:.06em;flex:1}
-.hd-btn{width:32px;height:32px;border-radius:var(--r);border:1px solid var(--border);background:transparent;color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;flex-shrink:0}
+.hd-btn{width:32px;height:32px;border-radius:var(--r);border:1px solid var(--border);background:transparent;color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s}
 .hd-btn:hover{border-color:var(--border-h);color:var(--text);background:var(--bg)}
 .hd-btn.add{background:var(--green);border-color:var(--green);color:#fff;font-size:20px;font-weight:300}
 .hd-btn.add:hover{background:var(--green-d);border-color:var(--green-d)}
 
-/* ── FILTER BAR ── */
-#fb{background:var(--white);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;flex-wrap:nowrap;overflow-x:auto;gap:5px;min-height:44px;scrollbar-width:none}
-#fb::-webkit-scrollbar{display:none}
-.fg{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.fl{display:none}
+/* FILTER BAR — flex-wrap で自動折り返し */
+#fb{background:var(--white);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px;min-height:44px}
+.fg{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .pill{padding:3px 10px;border-radius:var(--r-pill);border:2px solid transparent;font-size:11px;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.5;font-weight:400}
-.pill-a{background:var(--ta-bg);color:var(--ta-on)}
-.pill-b{background:var(--tb-bg);color:var(--tb-on)}
-.pill-c{background:var(--tc-bg);color:var(--tc-on)}
-.pill-a:hover{border-color:var(--ta-bd)}
-.pill-b:hover{border-color:var(--tb-bd)}
-.pill-c:hover{border-color:var(--tc-bd)}
-.pill.on-a{border-color:var(--ta-on);font-weight:500}
-.pill.on-b{border-color:var(--tb-on);font-weight:500}
-.pill.on-c{border-color:var(--tc-on);font-weight:500}
-.fdiv{width:1px;height:16px;background:var(--border);flex-shrink:0}
-#f-count{font-size:11px;color:var(--text-3);margin-left:auto;white-space:nowrap;flex-shrink:0;padding-left:8px}
+.pill-a{background:var(--ta-bg);color:var(--ta-on)}.pill-b{background:var(--tb-bg);color:var(--tb-on)}.pill-c{background:var(--tc-bg);color:var(--tc-on)}
+.pill-a:hover{border-color:var(--ta-bd)}.pill-b:hover{border-color:var(--tb-bd)}.pill-c:hover{border-color:var(--tc-bd)}
+.pill.on-a{border-color:var(--ta-on);font-weight:500}.pill.on-b{border-color:var(--tb-on);font-weight:500}.pill.on-c{border-color:var(--tc-on);font-weight:500}
+.fdiv{width:1px;height:16px;background:var(--border);flex-shrink:0;align-self:center}
+#f-count{font-size:11px;color:var(--text-3);margin-left:auto;white-space:nowrap;padding-left:8px}
 
-/* ── GALLERY ── */
-#gallery{padding:24px 20px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px;max-width:1440px;margin:0 auto}
+/* GALLERY */
+#gallery{padding:24px 20px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;max-width:1440px;margin:0 auto}
 
-/* ── CARD ── */
-.cw{aspect-ratio:55/91;perspective:900px;cursor:pointer}
+/* CARD ITEM = カード画像 + 情報エリア */
+.card-item{display:flex;flex-direction:column;gap:8px;position:relative}
+
+/* カード右上のアクションボタン群 */
+.card-actions{position:absolute;top:-10px;right:-10px;display:none;gap:4px;z-index:10}
+.card-item:hover .card-actions{display:flex}
+.ca-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--white);color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:var(--sh);transition:all .15s}
+.ca-btn:hover{border-color:var(--border-h);color:var(--text);box-shadow:var(--sh-h)}
+.ca-btn.edit-btn{border-color:var(--green);color:var(--green)}
+.ca-btn.edit-btn:hover{background:var(--green-l)}
+
+/* カード本体（フリップ） */
+.cw{aspect-ratio:55/91;perspective:900px;cursor:pointer;width:100%}
 .ci{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:var(--r)}
 .cw.flipped .ci{transform:rotateY(180deg)}
 .cf{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r);border:1px solid var(--border);background:var(--white);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .2s}
 .cw:hover .cf{box-shadow:var(--sh-h)}
 .cb{transform:rotateY(180deg)}
 .cf img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-.ctags{position:absolute;bottom:0;left:0;right:0;padding:5px;display:flex;flex-wrap:wrap;gap:3px;background:linear-gradient(transparent,rgba(255,255,255,.92) 55%);border-radius:0 0 var(--r) var(--r)}
+
+/* カード下の情報エリア */
+.card-info{padding:2px 2px 0}
+.card-lot{font-size:10px;color:var(--text-3);letter-spacing:.06em;line-height:1.4}
+.card-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:2px}
+.card-memo{font-size:11px;color:var(--text-2);line-height:1.4;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-tags{display:flex;flex-wrap:wrap;gap:3px}
 .ct{font-size:9px;padding:2px 6px;border-radius:var(--r-pill);line-height:1.4;font-family:inherit}
 .ct-a{background:var(--ta-bg);color:var(--ta-on);border:1px solid var(--ta-bd)}
 .ct-b{background:var(--tb-bg);color:var(--tb-on);border:1px solid var(--tb-bd)}
 .ct-c{background:var(--tc-bg);color:var(--tc-on);border:1px solid var(--tc-bd)}
 
-/* ── EMPTY STATE ── */
+/* EMPTY */
 #empty{display:none;grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--text-3)}
 #empty svg{margin-bottom:12px;opacity:.3}
 #empty p{font-size:14px;color:var(--text-2);margin-bottom:6px;font-weight:500}
 #empty small{font-size:12px;line-height:1.7}
 
-/* ── LIGHTBOX ── */
+/* LIGHTBOX */
 #lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:center;justify-content:center;padding:16px}
 #lb.open{display:flex}
 #lb-box{background:var(--white);border-radius:var(--r);padding:20px;max-width:92vw;max-height:92vh;overflow:auto;position:relative;display:flex;flex-direction:column;gap:14px}
 #lb-close{position:absolute;top:10px;right:12px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text-2)}
 #lb-close:hover{border-color:var(--border-h);color:var(--text)}
 #lb-imgs{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
-#lb-imgs img{border-radius:6px;border:1px solid var(--border);max-height:68vh;object-fit:contain;width:min(220px,40vw)}
-#lb-meta{min-width:0}
+#lb-imgs img{border-radius:6px;border:1px solid var(--border);max-height:68vh;object-fit:contain;width:min(240px,42vw)}
 #lb-name{font-size:15px;font-weight:500;margin-bottom:4px}
 #lb-desc{font-size:12px;color:var(--text-2);line-height:1.7}
 #lb-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
 
-/* ── ADMIN OVERLAY ── */
+/* ADMIN OVERLAY */
 #adm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;padding:16px}
 #adm.open{display:flex}
-#adm-box{background:var(--white);border-radius:var(--r);padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;position:relative}
+#adm-box{background:var(--white);border-radius:var(--r);padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;position:relative}
 #adm-close{position:absolute;top:12px;right:14px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text-2)}
 #adm-close:hover{border-color:var(--border-h);color:var(--text)}
-#adm-box h2{font-size:14px;font-weight:500;margin-bottom:18px}
 
-/* ── FORM ── */
+/* FORM */
 .frow{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
 .frow label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
-.frow input,.frow textarea,.frow select{padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg);font-size:13px;font-family:inherit;color:var(--text);width:100%;transition:border-color .15s}
-.frow input:focus,.frow textarea:focus,.frow select:focus{outline:none;border-color:var(--green);background:var(--white)}
+.frow input,.frow textarea{padding:8px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg);font-size:13px;font-family:inherit;color:var(--text);width:100%;transition:border-color .15s}
+.frow input:focus,.frow textarea:focus{outline:none;border-color:var(--green);background:var(--white)}
 .up-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .up-col label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:5px}
-.up-area{border:1.5px dashed var(--border);border-radius:var(--r);background:var(--bg);min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
-.up-area:hover,.up-area.drag{border-color:var(--green);background:var(--green-l)}
+.up-area{border:1.5px dashed var(--border);border-radius:var(--r);background:var(--bg);min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.up-area:hover{border-color:var(--green);background:var(--green-l)}
 .up-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.up-area .up-ico{font-size:18px;color:var(--text-3);pointer-events:none}
-.up-area .up-txt{font-size:11px;color:var(--text-3);pointer-events:none}
-.up-area .up-ok{font-size:11px;color:var(--green);font-weight:500;pointer-events:none}
-.thumb{width:100%;aspect-ratio:55/91;border-radius:6px;border:1px solid var(--border);overflow:hidden;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-3);margin-top:6px}
+.up-area .up-ico{font-size:16px;color:var(--text-3);pointer-events:none}
+.up-area .up-txt{font-size:10px;color:var(--text-3);pointer-events:none;text-align:center;padding:0 4px}
+.thumb{width:100%;aspect-ratio:55/91;border-radius:6px;border:1px solid var(--border);overflow:hidden;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-3);margin-top:5px}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.tag-sect-label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
-.pill-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.pill-ck{padding:4px 11px;border-radius:var(--r-pill);border:1px solid var(--border);background:transparent;font-size:12px;font-family:inherit;color:var(--text-2);cursor:pointer;transition:all .15s;user-select:none}
-.pill-ck.ck-a{background:var(--ta-on);border-color:var(--ta-on);color:#fff}
-.pill-ck.ck-b{background:var(--tb-on);border-color:var(--tb-on);color:#fff}
-.pill-ck.ck-c{background:var(--tc-on);border-color:var(--tc-on);color:#fff}
+.sect-label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;margin-top:4px}
+.pill-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.pill-ck{padding:3px 10px;border-radius:var(--r-pill);border:2px solid transparent;font-size:11px;font-family:inherit;cursor:pointer;transition:all .15s;user-select:none}
+.pill-ck.ck-a{background:var(--ta-bg);color:var(--ta-on);border-color:var(--ta-on)}.pill-ck.base-a{background:var(--ta-bg);color:var(--ta-on)}
+.pill-ck.ck-b{background:var(--tb-bg);color:var(--tb-on);border-color:var(--tb-on)}.pill-ck.base-b{background:var(--tb-bg);color:var(--tb-on)}
+.pill-ck.ck-c{background:var(--tc-bg);color:var(--tc-on);border-color:var(--tc-on)}.pill-ck.base-c{background:var(--tc-bg);color:var(--tc-on)}
+.tag-add-row{display:flex;gap:5px;margin-bottom:12px}
+.tag-add-row input{flex:1;padding:5px 8px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg);font-size:12px;font-family:inherit;color:var(--text)}
+.tag-add-row input:focus{outline:none;border-color:var(--green)}
+.tag-add-btn{padding:5px 10px;border-radius:var(--r);border:1px solid var(--border);background:transparent;font-size:11px;font-family:inherit;color:var(--text-2);cursor:pointer;white-space:nowrap}
+.tag-add-btn:hover{border-color:var(--green);color:var(--green)}
 .btn-row{display:flex;gap:8px;margin-top:16px}
 .btn-save{flex:1;padding:9px;border-radius:var(--r);border:none;background:var(--green);color:#fff;font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;transition:background .15s}
-.btn-save:hover{background:var(--green-d)}
-.btn-save:disabled{opacity:.55;cursor:not-allowed}
-.btn-cancel{padding:9px 14px;border-radius:var(--r);border:1px solid var(--border);background:transparent;font-size:13px;font-family:inherit;color:var(--text-2);cursor:pointer;transition:all .15s}
+.btn-save:hover{background:var(--green-d)}.btn-save:disabled{opacity:.55;cursor:not-allowed}
+.btn-cancel{padding:9px 14px;border-radius:var(--r);border:1px solid var(--border);background:transparent;font-size:13px;font-family:inherit;color:var(--text-2);cursor:pointer}
 .btn-cancel:hover{border-color:var(--border-h);color:var(--text)}
 #adm-msg{font-size:12px;min-height:16px;margin-top:8px;color:var(--green-d)}
 #adm-msg.err{color:var(--red)}
 .divider{border:none;border-top:1px solid var(--border);margin:18px 0}
-.adm-list{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto}
-.adm-item{display:flex;align-items:center;justify-content:space-between;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg)}
+.adm-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto}
+.adm-item{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg)}
 .adm-item-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px}
 .adm-item-btns{display:flex;gap:4px;flex-shrink:0}
 .ib{padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:var(--white);font-size:11px;font-family:inherit;cursor:pointer}
 .ib:disabled{opacity:.4;cursor:default}
-.ib.edit{border-color:var(--green);color:var(--green)}
-.ib.edit:hover{background:var(--green-l)}
-.ib.del{border-color:#e0a8a3;color:var(--red)}
-.ib.del:hover{background:#fdf0ef}
-
-/* ── LOGIN ── */
+.ib.edit{border-color:var(--green);color:var(--green)}.ib.edit:hover{background:var(--green-l)}
+.ib.del{border-color:#e0a8a3;color:var(--red)}.ib.del:hover{background:#fdf0ef}
 #login-sec h3{font-size:14px;font-weight:500;margin-bottom:16px}
+#mgmt-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+#mgmt-hd h2{font-size:14px;font-weight:500;margin:0}
 #login-msg{font-size:12px;color:var(--red);min-height:16px;margin-top:8px}
 .logout-link{background:none;border:none;color:var(--text-3);font-size:11px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:0}
-.logout-link:hover{color:var(--text-2)}
-
-/* ── CONSOLE TRIGGER ── */
 #console-trigger{text-align:center;padding:40px 0 60px;font-size:11px;color:var(--border-h);cursor:pointer;letter-spacing:.12em;user-select:none}
 #console-trigger:hover{color:var(--text-3)}
 
-/* ── RESPONSIVE ── */
 @media(max-width:480px){
   #hd{padding:0 14px;height:48px}
   #fb{padding:7px 14px}
-  #gallery{padding:16px 12px 48px;gap:12px;grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  #gallery{padding:16px 12px 48px;gap:14px;grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
   #adm-box{padding:18px 16px}
-  #console-trigger{padding:32px 0 48px}
 }
 @media(min-width:900px){
-  #gallery{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:22px;padding:28px 32px 72px}
+  #gallery{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:24px;padding:28px 32px 72px}
   #fb{padding:8px 32px}
   #hd{padding:0 32px}
 }
@@ -172,13 +166,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 </head>
 <body>
 
-<!-- HEADER -->
 <header id="hd">
   <div id="hd-title">Card Collection</div>
   <button class="hd-btn add" id="btn-add" title="カードを追加">＋</button>
 </header>
 
-<!-- FILTER BAR -->
 <div id="fb">
   <div class="fg" id="ft-a"></div>
   <div class="fdiv"></div>
@@ -188,7 +180,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   <span id="f-count"></span>
 </div>
 
-<!-- GALLERY -->
 <div id="gallery">
   <div id="empty">
     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
@@ -202,11 +193,9 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   <div id="lb-box">
     <button id="lb-close" aria-label="閉じる">✕</button>
     <div id="lb-imgs"></div>
-    <div id="lb-meta">
-      <div id="lb-name"></div>
-      <div id="lb-desc"></div>
-      <div id="lb-tags"></div>
-    </div>
+    <div id="lb-name"></div>
+    <div id="lb-desc"></div>
+    <div id="lb-tags"></div>
   </div>
 </div>
 
@@ -215,7 +204,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   <div id="adm-box">
     <button id="adm-close" aria-label="閉じる">✕</button>
 
-    <!-- ログイン -->
     <div id="login-sec">
       <h3>管理者ログイン</h3>
       <div class="frow"><label>メールアドレス</label><input type="email" id="f-email" placeholder="admin@example.com" autocomplete="email"></div>
@@ -224,18 +212,16 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
       <div id="login-msg"></div>
     </div>
 
-    <!-- 管理画面 -->
     <div id="mgmt-sec" style="display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <h2 id="mgmt-title" style="margin:0">カードを追加</h2>
+      <div id="mgmt-hd">
+        <h2 id="mgmt-title">カードを追加</h2>
         <button class="logout-link" id="btn-logout">ログアウト</button>
       </div>
 
-      <!-- 画像アップロード -->
       <div class="up-pair">
         <div class="up-col">
           <label>表面 <span style="color:var(--red)">*</span></label>
-          <label class="up-area" id="ua-front">
+          <label class="up-area">
             <input type="file" id="fi-front" accept="image/*">
             <span class="up-ico">↑</span>
             <span class="up-txt" id="fn-front">画像を選択</span>
@@ -244,7 +230,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
         </div>
         <div class="up-col">
           <label>裏面 <span style="color:var(--red)">*</span></label>
-          <label class="up-area" id="ua-back">
+          <label class="up-area">
             <input type="file" id="fi-back" accept="image/*">
             <span class="up-ico">↑</span>
             <span class="up-txt" id="fn-back">画像を選択</span>
@@ -260,12 +246,26 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
       <div class="frow"><label>メモ（任意）</label><textarea id="f-memo" rows="2" placeholder="自由記述"></textarea></div>
       <div class="frow"><label>URL（任意）</label><input type="url" id="f-url" placeholder="https://..."></div>
 
-      <div class="tag-sect-label">タグ①</div>
+      <div class="sect-label">タグ① <span style="font-weight:300;font-size:9px;letter-spacing:0">（タップで選択）</span></div>
       <div class="pill-row" id="fc-a"></div>
-      <div class="tag-sect-label">タグ②</div>
+      <div class="tag-add-row">
+        <input type="text" id="new-tag-a" placeholder="新しいタグを追加…">
+        <button class="tag-add-btn" data-g="a">追加</button>
+      </div>
+
+      <div class="sect-label">タグ②</div>
       <div class="pill-row" id="fc-b"></div>
-      <div class="tag-sect-label">タグ③</div>
+      <div class="tag-add-row">
+        <input type="text" id="new-tag-b" placeholder="新しいタグを追加…">
+        <button class="tag-add-btn" data-g="b">追加</button>
+      </div>
+
+      <div class="sect-label">タグ③</div>
       <div class="pill-row" id="fc-c"></div>
+      <div class="tag-add-row">
+        <input type="text" id="new-tag-c" placeholder="新しいタグを追加…">
+        <button class="tag-add-btn" data-g="c">追加</button>
+      </div>
 
       <input type="hidden" id="edit-id">
       <div class="btn-row">
@@ -281,14 +281,12 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   </div>
 </div>
 
-<!-- CONSOLE TRIGGER -->
 <div id="console-trigger">— CONSOLE PANEL —</div>
 
 <script>
 const SB_URL = 'https://qsjggchstjehmlptjdjw.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzamdnY2hzdGplaG1scHRqZGp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNzQ3NDksImV4cCI6MjA5Nzg1MDc0OX0.hup5eVHjc-2ZTq5BNWfev_-LxZNjsfXu7TKr9k65lWs';
 
-// ── タグ定義（自由に編集可）──
 const TAGS = {
   a: ['EAT IN','TAKE OUT','DELIVERY'],
   b: ['主食','甘味','スナック','ドリンク'],
@@ -298,51 +296,40 @@ const TAGS = {
 let sb, allCards = [], session = null;
 const active = { a: new Set(), b: new Set(), c: new Set() };
 
-// ── 初期化 ──
 window.addEventListener('load', () => {
   sb = window.supabase.createClient(SB_URL, SB_KEY, {
     auth: { persistSession: true, storage: localStorage, detectSessionInUrl: false }
   });
-
   buildFilterUI();
   buildTagChecks();
   bindEvents();
-  loadSession();
-  fetchCards();
+  loadSession().then(() => { fetchCards(); });
 });
 
-// ── セッション確認 ──
 async function loadSession() {
-  try {
-    const { data } = await sb.auth.getSession();
-    session = data.session;
-  } catch(e) { session = null; }
+  try { const { data } = await sb.auth.getSession(); session = data.session; }
+  catch(e) { session = null; }
 }
 
-// ── カード取得 ──
 async function fetchCards() {
   try {
     const { data, error } = await sb.from('cards').select('*').order('created_at', { ascending: false });
     if (error) throw error;
     allCards = data || [];
-  } catch(e) {
-    allCards = [];
-  }
+  } catch(e) { allCards = []; }
   renderGallery();
   renderAdminList();
 }
 
-// ── ギャラリー描画 ──
+// ── ギャラリー ──
 function renderGallery() {
   const gallery = document.getElementById('gallery');
   const empty = document.getElementById('empty');
-  [...gallery.querySelectorAll('.cw')].forEach(el => el.remove());
-
-  const visible = allCards.filter(c => matchFilter(c));
+  [...gallery.querySelectorAll('.card-item')].forEach(el => el.remove());
+  const visible = allCards.filter(matchFilter);
   document.getElementById('f-count').textContent = visible.length + ' 枚';
   empty.style.display = visible.length === 0 ? 'block' : 'none';
-
-  visible.forEach(c => gallery.insertBefore(makeCard(c), empty));
+  visible.forEach(c => gallery.insertBefore(makeCardItem(c), empty));
 }
 
 function matchFilter(c) {
@@ -354,14 +341,37 @@ function matchFilter(c) {
   return true;
 }
 
-function makeCard(c) {
-  const w = document.createElement('div');
-  w.className = 'cw';
+function makeCardItem(c) {
+  const item = document.createElement('div');
+  item.className = 'card-item';
 
-  const inner = document.createElement('div');
-  inner.className = 'ci';
+  // ── アクションボタン（ログイン中のみ表示） ──
+  if (session) {
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
 
-  // 表・裏
+    const zoomBtn = document.createElement('button');
+    zoomBtn.className = 'ca-btn';
+    zoomBtn.title = '拡大';
+    zoomBtn.textContent = '⤢';
+    zoomBtn.addEventListener('click', e => { e.stopPropagation(); openLightbox(c); });
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'ca-btn edit-btn';
+    editBtn.title = '編集';
+    editBtn.textContent = '✎';
+    editBtn.addEventListener('click', e => { e.stopPropagation(); openAdmin(); startEdit(c); });
+
+    actions.append(zoomBtn, editBtn);
+    item.appendChild(actions);
+  }
+
+  // ── カード本体（フリップ） ──
+  const cw = document.createElement('div');
+  cw.className = 'cw';
+  const ci = document.createElement('div');
+  ci.className = 'ci';
+
   ['front','back'].forEach(side => {
     const face = document.createElement('div');
     face.className = 'cf' + (side === 'back' ? ' cb' : '');
@@ -369,34 +379,57 @@ function makeCard(c) {
     if (url) {
       const img = document.createElement('img');
       img.src = url; img.loading = 'lazy';
-      img.alt = c.name + (side === 'back' ? '（裏）' : '');
+      img.alt = (c.name || '') + (side === 'back' ? '（裏）' : '');
       face.appendChild(img);
     }
-    // 表面だけタグチップ
-    if (side === 'front') {
-      const tags = document.createElement('div');
-      tags.className = 'ctags';
-      (c.tag_a||[]).forEach(t => tags.appendChild(chip(t,'a')));
-      (c.tag_b||[]).forEach(t => tags.appendChild(chip(t,'b')));
-      (c.tag_c||[]).forEach(t => tags.appendChild(chip(t,'c')));
-      if (tags.children.length) face.appendChild(tags);
-    }
-    inner.appendChild(face);
+    ci.appendChild(face);
   });
-  w.appendChild(inner);
+  cw.appendChild(ci);
 
-  // シングルクリック→フリップ、ダブルクリック→ライトボックス
+  // シングルクリック→フリップ
   let clicks = 0, timer;
-  w.addEventListener('click', () => {
+  cw.addEventListener('click', () => {
     clicks++;
     if (clicks === 1) {
-      timer = setTimeout(() => { w.classList.toggle('flipped'); clicks = 0; }, 220);
+      timer = setTimeout(() => { cw.classList.toggle('flipped'); clicks = 0; }, 220);
     } else {
       clearTimeout(timer); clicks = 0;
       openLightbox(c);
     }
   });
-  return w;
+  item.appendChild(cw);
+
+  // ── カード下の情報エリア ──
+  const info = document.createElement('div');
+  info.className = 'card-info';
+  if (c.lot) {
+    const lot = document.createElement('div');
+    lot.className = 'card-lot';
+    lot.textContent = 'No.' + c.lot;
+    info.appendChild(lot);
+  }
+  if (c.name) {
+    const name = document.createElement('div');
+    name.className = 'card-name';
+    name.textContent = c.name;
+    info.appendChild(name);
+  }
+  if (c.memo) {
+    const memo = document.createElement('div');
+    memo.className = 'card-memo';
+    memo.textContent = c.memo;
+    info.appendChild(memo);
+  }
+  // タグ
+  const tagsEl = document.createElement('div');
+  tagsEl.className = 'card-tags';
+  (c.tag_a||[]).forEach(t => tagsEl.appendChild(chip(t,'a')));
+  (c.tag_b||[]).forEach(t => tagsEl.appendChild(chip(t,'b')));
+  (c.tag_c||[]).forEach(t => tagsEl.appendChild(chip(t,'c')));
+  if (tagsEl.children.length) info.appendChild(tagsEl);
+  item.appendChild(info);
+
+  return item;
 }
 
 function chip(text, g) {
@@ -412,19 +445,17 @@ function openLightbox(c) {
   imgs.innerHTML = '';
   if (c.front_url) { const i = document.createElement('img'); i.src = c.front_url; i.alt = '表面'; imgs.appendChild(i); }
   if (c.back_url)  { const i = document.createElement('img'); i.src = c.back_url;  i.alt = '裏面'; imgs.appendChild(i); }
-
   const nameEl = document.getElementById('lb-name');
-  nameEl.textContent = (c.lot ? '[' + c.lot + '] ' : '') + (c.name || '');
+  nameEl.textContent = (c.lot ? 'No.' + c.lot + '　' : '') + (c.name || '');
   const descEl = document.getElementById('lb-desc');
   descEl.innerHTML = '';
-  if (c.memo) { const p = document.createElement('p'); p.textContent = c.memo; descEl.appendChild(p); }
-  if (c.url) { const a = document.createElement('a'); a.href = c.url; a.textContent = c.url; a.target = '_blank'; a.rel = 'noopener'; a.style.cssText = 'font-size:11px;color:var(--green);word-break:break-all;'; descEl.appendChild(a); }
+  if (c.memo) { const p = document.createElement('p'); p.textContent = c.memo; p.style.cssText = 'font-size:12px;color:var(--text-2);line-height:1.7'; descEl.appendChild(p); }
+  if (c.url)  { const a = document.createElement('a'); a.href = c.url; a.textContent = c.url; a.target = '_blank'; a.rel = 'noopener'; a.style.cssText = 'font-size:11px;color:var(--green);word-break:break-all;display:block;margin-top:4px'; descEl.appendChild(a); }
   const tagsEl = document.getElementById('lb-tags');
   tagsEl.innerHTML = '';
   (c.tag_a||[]).forEach(t => tagsEl.appendChild(chip(t,'a')));
   (c.tag_b||[]).forEach(t => tagsEl.appendChild(chip(t,'b')));
   (c.tag_c||[]).forEach(t => tagsEl.appendChild(chip(t,'c')));
-
   document.getElementById('lb').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -434,7 +465,7 @@ function closeLightbox() {
   document.body.style.overflow = '';
 }
 
-// ── フィルター UI ──
+// ── フィルター ──
 function buildFilterUI() {
   for (const g of ['a','b','c']) {
     const cont = document.getElementById('ft-' + g);
@@ -458,33 +489,54 @@ function buildFilterUI() {
 }
 
 function syncPills(g) {
-  const cont = document.getElementById('ft-' + g);
-  const btns = [...cont.querySelectorAll('.pill')];
-  const allBtn = btns[0];
+  const btns = [...document.getElementById('ft-' + g).querySelectorAll('.pill')];
   if (active[g].size === 0) {
-    allBtn.className = 'pill pill-' + g + ' on-' + g;
+    btns[0].className = 'pill pill-' + g + ' on-' + g;
     btns.slice(1).forEach(b => b.className = 'pill pill-' + g);
   } else {
-    allBtn.className = 'pill pill-' + g;
+    btns[0].className = 'pill pill-' + g;
     btns.slice(1).forEach((b, i) => {
       b.className = 'pill pill-' + g + (active[g].has(TAGS[g][i]) ? ' on-' + g : '');
     });
   }
 }
 
-// ── タグチェック（管理フォーム）──
+// ── タグチェック ──
 function buildTagChecks() {
-  for (const g of ['a','b','c']) {
-    const cont = document.getElementById('fc-' + g);
-    cont.innerHTML = '';
-    TAGS[g].forEach(tag => {
-      const el = document.createElement('span');
-      el.className = 'pill-ck';
-      el.textContent = tag;
-      el.addEventListener('click', () => el.classList.toggle('ck-' + g));
-      cont.appendChild(el);
-    });
-  }
+  for (const g of ['a','b','c']) refreshTagChecks(g);
+}
+
+function refreshTagChecks(g, selected = []) {
+  const cont = document.getElementById('fc-' + g);
+  cont.innerHTML = '';
+  TAGS[g].forEach(tag => {
+    const el = document.createElement('span');
+    el.className = 'pill-ck base-' + g + (selected.includes(tag) ? ' ck-' + g : '');
+    el.textContent = tag;
+    el.addEventListener('click', () => el.classList.toggle('ck-' + g));
+    cont.appendChild(el);
+  });
+}
+
+function addNewTag(g) {
+  const input = document.getElementById('new-tag-' + g);
+  const val = input.value.trim();
+  if (!val || TAGS[g].includes(val)) { input.value = ''; return; }
+  TAGS[g].push(val);
+  // フィルターにも追加
+  const cont = document.getElementById('ft-' + g);
+  const b = document.createElement('button');
+  b.className = 'pill pill-' + g;
+  b.textContent = val;
+  b.addEventListener('click', () => {
+    active[g].has(val) ? active[g].delete(val) : active[g].add(val);
+    syncPills(g); renderGallery();
+  });
+  cont.appendChild(b);
+  // フォームも更新（現在の選択状態を保持）
+  const currentSel = getChecked(g);
+  refreshTagChecks(g, [...currentSel, val]);
+  input.value = '';
 }
 
 function getChecked(g) {
@@ -492,7 +544,7 @@ function getChecked(g) {
 }
 
 function clearChecks() {
-  document.querySelectorAll('.pill-ck').forEach(el => el.className = 'pill-ck');
+  for (const g of ['a','b','c']) refreshTagChecks(g);
 }
 
 // ── 管理リスト ──
@@ -509,17 +561,13 @@ function renderAdminList() {
     item.className = 'adm-item';
     const name = document.createElement('div');
     name.className = 'adm-item-name';
-    name.textContent = c.name || '（無題）';
+    name.textContent = (c.lot ? '[' + c.lot + '] ' : '') + (c.name || '（無題）');
     const btns = document.createElement('div');
     btns.className = 'adm-item-btns';
-    const up = document.createElement('button'); up.className = 'ib'; up.textContent = '▲'; up.disabled = i === 0;
-    up.addEventListener('click', () => moveCard(i, -1));
-    const dn = document.createElement('button'); dn.className = 'ib'; dn.textContent = '▼'; dn.disabled = i === allCards.length - 1;
-    dn.addEventListener('click', () => moveCard(i, 1));
-    const ed = document.createElement('button'); ed.className = 'ib edit'; ed.textContent = '編集';
-    ed.addEventListener('click', () => startEdit(c));
-    const dl = document.createElement('button'); dl.className = 'ib del'; dl.textContent = '削除';
-    dl.addEventListener('click', () => deleteCard(c.id));
+    const up = document.createElement('button'); up.className = 'ib'; up.textContent = '▲'; up.disabled = i === 0; up.addEventListener('click', () => moveCard(i, -1));
+    const dn = document.createElement('button'); dn.className = 'ib'; dn.textContent = '▼'; dn.disabled = i === allCards.length - 1; dn.addEventListener('click', () => moveCard(i, 1));
+    const ed = document.createElement('button'); ed.className = 'ib edit'; ed.textContent = '編集'; ed.addEventListener('click', () => startEdit(c));
+    const dl = document.createElement('button'); dl.className = 'ib del'; dl.textContent = '削除'; dl.addEventListener('click', () => deleteCard(c.id));
     btns.append(up, dn, ed, dl);
     item.append(name, btns);
     list.appendChild(item);
@@ -531,44 +579,34 @@ async function saveCard() {
   const editId = document.getElementById('edit-id').value;
   const name = document.getElementById('f-name').value.trim();
   if (!name) { showMsg('カード名を入力してください', true); return; }
-
   const fFile = document.getElementById('fi-front').files;
   const bFile = document.getElementById('fi-back').files;
-  if (!editId && (!fFile.length || !bFile.length)) {
-    showMsg('表面・裏面どちらの画像も必要です', true); return;
-  }
-
+  if (!editId && (!fFile.length || !bFile.length)) { showMsg('表面・裏面どちらの画像も必要です', true); return; }
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.textContent = '保存中…';
-
   try {
     let frontUrl = '', backUrl = '';
-
     if (fFile.length) {
       const path = 'front_' + Date.now() + '_' + fFile[0].name.replace(/[^a-zA-Z0-9.]/g,'_');
-      const { error: upErr } = await sb.storage.from('card-images').upload(path, fFile[0], { upsert: true });
-      if (upErr) throw upErr;
+      const { error: e } = await sb.storage.from('card-images').upload(path, fFile[0], { upsert: true });
+      if (e) throw e;
       frontUrl = sb.storage.from('card-images').getPublicUrl(path).data.publicUrl;
     }
     if (bFile.length) {
       const path = 'back_' + Date.now() + '_' + bFile[0].name.replace(/[^a-zA-Z0-9.]/g,'_');
-      const { error: upErr } = await sb.storage.from('card-images').upload(path, bFile[0], { upsert: true });
-      if (upErr) throw upErr;
+      const { error: e } = await sb.storage.from('card-images').upload(path, bFile[0], { upsert: true });
+      if (e) throw e;
       backUrl = sb.storage.from('card-images').getPublicUrl(path).data.publicUrl;
     }
-
     const payload = {
       name,
       lot: document.getElementById('f-lot').value.trim(),
       memo: document.getElementById('f-memo').value.trim(),
       url: document.getElementById('f-url').value.trim(),
-      tag_a: getChecked('a'),
-      tag_b: getChecked('b'),
-      tag_c: getChecked('c'),
+      tag_a: getChecked('a'), tag_b: getChecked('b'), tag_c: getChecked('c'),
     };
     if (frontUrl) payload.front_url = frontUrl;
     if (backUrl)  payload.back_url  = backUrl;
-
     if (editId) {
       const { error } = await sb.from('cards').update(payload).eq('id', editId);
       if (error) throw error;
@@ -576,13 +614,10 @@ async function saveCard() {
       const { error } = await sb.from('cards').insert(payload);
       if (error) throw error;
     }
-
     showMsg(editId ? '更新しました ✓' : '追加しました ✓');
     resetForm();
     await fetchCards();
-  } catch(e) {
-    showMsg('エラー: ' + e.message, true);
-  }
+  } catch(e) { showMsg('エラー: ' + e.message, true); }
   btn.disabled = false;
   btn.textContent = document.getElementById('edit-id').value ? '上書き保存' : '保存する';
 }
@@ -593,19 +628,22 @@ function startEdit(c) {
   document.getElementById('f-name').value = c.name || '';
   document.getElementById('f-memo').value = c.memo || '';
   document.getElementById('f-url').value = c.url || '';
-  clearChecks();
-  (c.tag_a||[]).forEach(t => {
-    const el = [...document.querySelectorAll('#fc-a .pill-ck')].find(el => el.textContent === t);
-    if (el) el.classList.add('ck-a');
+  // 既存画像をプレビューに表示
+  ['front','back'].forEach(side => {
+    const url = side === 'front' ? c.front_url : c.back_url;
+    const pv = document.getElementById('pv-' + side);
+    pv.innerHTML = '';
+    if (url) {
+      const img = document.createElement('img'); img.src = url; pv.appendChild(img);
+      document.getElementById('fn-' + side).textContent = '変更する場合のみ選択';
+    } else {
+      pv.textContent = 'プレビュー';
+    }
   });
-  (c.tag_b||[]).forEach(t => {
-    const el = [...document.querySelectorAll('#fc-b .pill-ck')].find(el => el.textContent === t);
-    if (el) el.classList.add('ck-b');
-  });
-  (c.tag_c||[]).forEach(t => {
-    const el = [...document.querySelectorAll('#fc-c .pill-ck')].find(el => el.textContent === t);
-    if (el) el.classList.add('ck-c');
-  });
+  // タグ選択
+  refreshTagChecks('a', c.tag_a || []);
+  refreshTagChecks('b', c.tag_b || []);
+  refreshTagChecks('c', c.tag_c || []);
   document.getElementById('mgmt-title').textContent = 'カードを編集';
   document.getElementById('btn-save').textContent = '上書き保存';
   document.getElementById('btn-cancel').style.display = '';
@@ -667,27 +705,24 @@ async function doLogin() {
     document.getElementById('login-sec').style.display = 'none';
     document.getElementById('mgmt-sec').style.display = '';
     renderAdminList();
-  } catch(e) {
-    msg.textContent = 'ログイン失敗: ' + e.message;
-  }
+    renderGallery(); // 編集ボタンを表示するため再描画
+  } catch(e) { msg.textContent = 'ログイン失敗: ' + e.message; }
   btn.disabled = false; btn.textContent = 'ログイン';
 }
 
 async function doLogout() {
-  await sb.auth.signOut();
-  session = null;
+  await sb.auth.signOut(); session = null;
   document.getElementById('login-sec').style.display = '';
   document.getElementById('mgmt-sec').style.display = 'none';
   document.getElementById('f-email').value = '';
   document.getElementById('f-pass').value = '';
   document.getElementById('login-msg').textContent = '';
+  renderGallery(); // 編集ボタンを非表示にするため再描画
 }
 
-// ── 管理パネル開閉 ──
 function openAdmin() {
   document.getElementById('adm').classList.add('open');
   document.body.style.overflow = 'hidden';
-  // セッション確認してUI切替
   if (session) {
     document.getElementById('login-sec').style.display = 'none';
     document.getElementById('mgmt-sec').style.display = '';
@@ -705,27 +740,26 @@ function closeAdmin() {
 
 // ── イベント ──
 function bindEvents() {
-  // 管理パネル
   document.getElementById('console-trigger').addEventListener('click', openAdmin);
   document.getElementById('btn-add').addEventListener('click', openAdmin);
   document.getElementById('adm-close').addEventListener('click', closeAdmin);
   document.getElementById('adm').addEventListener('click', e => { if (e.target === document.getElementById('adm')) closeAdmin(); });
-
-  // ライトボックス
   document.getElementById('lb-close').addEventListener('click', closeLightbox);
   document.getElementById('lb').addEventListener('click', e => { if (e.target === document.getElementById('lb')) closeLightbox(); });
-
-  // ESC
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLightbox(); closeAdmin(); } });
-
-  // ログイン
   document.getElementById('btn-login').addEventListener('click', doLogin);
   document.getElementById('f-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
   document.getElementById('btn-logout').addEventListener('click', doLogout);
-
-  // カード保存・リセット
   document.getElementById('btn-save').addEventListener('click', saveCard);
   document.getElementById('btn-cancel').addEventListener('click', resetForm);
+
+  // タグ追加ボタン
+  document.querySelectorAll('.tag-add-btn').forEach(btn => {
+    btn.addEventListener('click', () => addNewTag(btn.dataset.g));
+  });
+  document.querySelectorAll('.tag-add-row input').forEach(inp => {
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') addNewTag(inp.id.replace('new-tag-','')) });
+  });
 
   // 画像プレビュー
   ['front','back'].forEach(side => {
@@ -738,9 +772,7 @@ function bindEvents() {
       reader.onload = e => {
         const pv = document.getElementById('pv-' + side);
         pv.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        pv.appendChild(img);
+        const img = document.createElement('img'); img.src = e.target.result; pv.appendChild(img);
       };
       reader.readAsDataURL(file);
     });
